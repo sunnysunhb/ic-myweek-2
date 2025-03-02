@@ -143,13 +143,15 @@ GO
 --Week 2 Homework
 
 --1. Add a new column to the Customer Sale View called "Full Name". This should be made up of the Customer Firstname and Last Name columns
-ALTER TABLE Customer
-ADD [FullName] NVARCHAR(70) NULL;
 
-UPDATE Customer
-SET [FullName] = [Firstname] + ' ' + [Lastname];
-
---select * from Customer
+ALTER view [dbo].[CustomerSales]
+as
+select c.Id as 'Customer Id', c.FirstName, c.LastName, c.FirstName + ' ' + c.LastName  as FullName, s.DateSold, p.[Name], p.Price
+, [dbo].[GetCustomerAmount](c.Id) as 'Total Purchases'
+	from Customer c
+	left join  Sale s on  c.Id = s.CustomerId
+	left join  Product p on  s.ProductId = p.Id
+GO
 
 --2. Write a function that calculates the persons age using their date of birth
 
@@ -195,8 +197,28 @@ SET IDENTITY_INSERT [dbo].[Customer] OFF
 ALTER TABLE Sale
 ADD [StoreId] int NULL;
 
+ALTER TABLE Sale
+ADD CONSTRAINT FK_Sale_Store
+FOREIGN KEY (StoreId)
+REFERENCES Store(Id)
+ON DELETE CASCADE
+ON UPDATE CASCADE;
+
 update Sale set [StoreId] = 3 where Id = 1;
 update Sale set [StoreId] = 2 where Id = 2;
 update Sale set [StoreId] = 1 where Id = 3;
 
 --select * from Sale
+
+
+
+
+
+
+
+
+
+
+
+
+
